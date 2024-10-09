@@ -21,7 +21,23 @@ model User {
   tg_description String @default("")
 } 
 
-model Games {
+model Game {
   id Int @default(autoincrement()) @id
-  g_name String 
+  name String
+  platforms GamesOnPlatforms[]
+}
+
+model Platform {
+  id Int @default(autoincrement()) @id
+  name String
+  games GamesOnPlatforms[]
+}
+
+model GamesOnPlatforms {
+  game Game @relation(fields: [gameId], references: [id])
+  gameId Int
+  platform Platform @relation(fields: [platformId], references: [id])
+  platformId Int
+
+  @@id([gameId, platformId])
 }
