@@ -14,7 +14,12 @@ export class UsersController {
     // }
 
     // findAll(@Query('role') role?: 'INTERN' | 'ENGINEER' | 'ADMIN') {}
-    
+     
+    @Post()
+    create(@Body(ValidationPipe) user: CreateUserDto) { 
+        return this.usersService.create(user); 
+    }
+
     @Get()
     findAll( ){
         return this.usersService.findAll(); 
@@ -22,19 +27,10 @@ export class UsersController {
     @Get(":id")
     findOne(@Param('id', ParseIntPipe) id: number){
         return this.usersService.findOne(id);
-    }
-
-    @Post()
-    create(@Body(ValidationPipe) user: CreateUserDto) { 
-        return this.usersService.create(user); 
-    }
+    } 
 
     @Patch()
     update(@Param('id') id: String, @Body() userUpdate: UpdateUserDto){
         return { id, ...userUpdate}
-    }  
-    // @Delete(":id")
-    // delete(@Param('id') id: String){
-    //     return { id }
-    // }
+    }   
 }
