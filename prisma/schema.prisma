@@ -15,11 +15,29 @@ datasource db {
 
 model User {
   id    Int     @default(autoincrement()) @id
-  tg_uid Int 
-  tg_name String  
-  tg_avatar String @default("")
-  tg_description String @default("")
+  uid Int 
+  name String  
+  avatar String @default("")
+  description String @default("")
+  genderId Int
+  user Gender? 
 } 
+
+model Gender {
+  id  Int @default(autoincrement()) @id
+  name  String
+  userId Int @unique
+  user User @relation(fields: [userId], references: [id])
+}
+
+model GamesOnPlatforms {
+  game Game @relation(fields: [gameId], references: [id])
+  gameId Int
+  platform Platform @relation(fields: [platformId], references: [id])
+  platformId Int
+
+  @@id([gameId, platformId])
+}
 
 model Game {
   id Int @default(autoincrement()) @id
@@ -31,13 +49,4 @@ model Platform {
   id Int @default(autoincrement()) @id
   name String
   games GamesOnPlatforms[]
-}
-
-model GamesOnPlatforms {
-  game Game @relation(fields: [gameId], references: [id])
-  gameId Int
-  platform Platform @relation(fields: [platformId], references: [id])
-  platformId Int
-
-  @@id([gameId, platformId])
 }

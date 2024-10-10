@@ -1,18 +1,12 @@
 import { Body, Controller, Get, Post, ValidationPipe } from '@nestjs/common';
-import { TestService } from './test.service';
-import { Prisma } from '@prisma/client';
+import { TestService } from './test.service'; 
 
 @Controller('test')
 export class TestController {
-    constructor( private readonly testService: TestService) {}
- 
-    @Get()
-    testGet( ){
-        return '';
-    }
+    constructor( private readonly testService: TestService) {} 
 
     @Post()
-    test(@Body(ValidationPipe) testData : Prisma.GameCreateInput) {
-        return this.testService.testFunction(testData);
+    test() {
+        return 'just test ^^'
     }
 }
