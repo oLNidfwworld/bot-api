@@ -16,13 +16,38 @@ export class UsersService {
         const user = this.databaseService.user.findUnique({
             where: {
                 id
+            },
+            include: { 
+                selectedGameOnPlatform : {
+                    select : {
+                        game : true,
+                        platform : true
+                    }
+                }
+            }
+        })
+        if (!user) throw new NotFoundException('User not found')
+        return  user;
+    }
+    findOneByTgId(tgid: number) {
+        const user = this.databaseService.user.findFirst({
+            where: {
+                uid: tgid
+            },
+            include: { 
+                selectedGameOnPlatform : {
+                    select : {
+                        game : true,
+                        platform : true
+                    }
+                }
             }
         })
         if (!user) throw new NotFoundException('User not found')
         return  user;
     }
 
-    async create(createUserDto: CreateUserDto) {
+    create(createUserDto: CreateUserDto) {
         return this.databaseService.user.create({
             data: createUserDto
         })

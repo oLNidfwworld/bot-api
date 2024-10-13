@@ -1,18 +1,30 @@
 import { Prisma } from "@prisma/client";
-import { IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { IsEnum, isNotEmpty, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateUserDto implements Prisma.UserCreateInput{
     @IsString()
     @IsNotEmpty()
-    tg_name: string;
+    name: string;
 
     @IsNotEmpty()
-    tg_uid: number;
-
-    tg_avatar?: string;
+    uid: number;
 
     @IsNotEmpty()
-    tg_description: string;
+    avatar_file_id?: string;
+
+    @IsNotEmpty() 
+    description: string;
+ 
+    // @IsNotEmpty()
+    // gameName : string;
+    // @IsNotEmpty()
+    // platformName : string;
+    
+    @IsNotEmpty()
+    selectedGameId : number;
+    @IsNotEmpty()
+    selectedPlatformId : number;
+      
  
     // @IsEnum(['INTERN', 'ENGINEER', 'ADMIN'], {
     //     message: 'Valid role required'

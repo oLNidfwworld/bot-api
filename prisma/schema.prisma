@@ -15,26 +15,40 @@ datasource db {
 
 model User {
   id    Int     @default(autoincrement()) @id
-  uid Int 
-  name String  
-  avatar String @default("")
+  uid Int @default(0)
+  name String @default("") 
+  avatar_file_id String @default("")
   description String @default("")
-  genderId Int
-  user Gender? 
+
+  // Связь с GamesOnPlatforms
+  selectedGameId      Int?
+  selectedPlatformId  Int? 
+  selectedGameOnPlatform GamesOnPlatforms? @relation(fields: [selectedGameId, selectedPlatformId], references: [gameId, platformId])
+
+  // @@unique([selectedGameId, selectedPlatformId]) // Уникальность связи
+
+  genderId Int?
+  user Gender?
+ 
 } 
 
 model Gender {
   id  Int @default(autoincrement()) @id
   name  String
+
   userId Int @unique
   user User @relation(fields: [userId], references: [id])
 }
+ 
 
 model GamesOnPlatforms {
   game Game @relation(fields: [gameId], references: [id])
   gameId Int
+
   platform Platform @relation(fields: [platformId], references: [id])
-  platformId Int
+  platformId Int 
+
+  users User[]
 
   @@id([gameId, platformId])
 }
@@ -42,11 +56,13 @@ model GamesOnPlatforms {
 model Game {
   id Int @default(autoincrement()) @id
   name String
+
   platforms GamesOnPlatforms[]
 }
 
 model Platform {
   id Int @default(autoincrement()) @id
   name String
+
   games GamesOnPlatforms[]
 }
