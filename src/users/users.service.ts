@@ -6,52 +6,86 @@ import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
-    constructor(private readonly databaseService : DatabaseService) {} 
-    findAll() { 
-        const users = this.databaseService.user.findMany();
-        return users;
-    }
+  constructor(private readonly databaseService: DatabaseService) {}
+  findAll() {
+    const users = this.databaseService.user.findMany();
+    return users;
+  }
 
-    findOne(id: number) {
-        const user = this.databaseService.user.findUnique({
-            where: {
-                id
-            },
-            include: { 
-                selectedGameOnPlatform : {
-                    select : {
-                        game : true,
-                        platform : true
-                    }
-                }
-            }
-        })
-        if (!user) throw new NotFoundException('User not found')
-        return  user;
-    }
-    findOneByTgId(tgid: number) {
-        const user = this.databaseService.user.findFirst({
-            where: {
-                uid: tgid
-            },
-            include: { 
-                selectedGameOnPlatform : {
-                    select : {
-                        game : true,
-                        platform : true
-                    }
-                }
-            }
-        })
-        if (!user) throw new NotFoundException('User not found')
-        return  user;
-    }
+  async findOne(id: number) {
+    const user = await this.databaseService.user.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        selectedGameOnPlatform: {
+          select: {
+            game: true,
+            platform: true,
+          },
+        },
+      },
+    });
+    if (!user) throw new NotFoundException('User not found');
 
-    create(createUserDto: CreateUserDto) {
-        return this.databaseService.user.create({
-            data: createUserDto
-        })
-    }
+    const santizied = {
+      ...user,
+      game: user.selectedGameOnPlatform.game,
+      platform: user.selectedGameOnPlatform.platform,
+    };
+    delete santizied['selectedGameOnPlatform'];
 
-    // other functions just a algoritmic implementation
+    return santizied;
+  }
+  async findOneByTgId(tgid: number) {
+    const user = await this.databaseService.user.findFirst({
+      where: {
+        uid: tgid,
+      },
+      include: {
+        selectedGameOnPlatform: {
+          select: {
+            game: true,
+            platform: true,
+          },
+        },
+      },
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    const santizied = {
+      ...user,
+      game: user.selectedGameOnPlatform.game,
+      platform: user.selectedGameOnPlatform.platform,
+    };
+    delete santizied['selectedGameOnPlatform'];
+
+    return santizied;
+  }
+
+  async create(createUserDto: CreateUserDto) {
+    const user = await this.databaseService.user.create({
+      data: createUserDto,
+      include: {
+        selectedGameOnPlatform: {
+          select: {
+            game: true,
+            platform: true,
+          },
+        },
+      },
+    });
+
+    const santizied = {
+      ...user,
+      game: user.selectedGameOnPlatform.game,
+      platform: user.selectedGameOnPlatform.platform,
+    };
+    delete santizied['selectedGameOnPlatform'];
+
+    return santizied;
+  }
+
+  // other functions just a algoritmic implementation
 }
