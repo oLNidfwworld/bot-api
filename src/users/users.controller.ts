@@ -18,19 +18,21 @@ export class UsersController {
     @Post()
     create(@Body(ValidationPipe) user: CreateUserDto) { 
         return this.usersService.create(user); 
-    }
+    } 
+    
+    @Get(":id")
+    findOne(@Param('id', ParseIntPipe) id: number){
+        return this.usersService.findOneByTgId(id); 
+    }   
 
     @Get()
     findAll( ){
         return this.usersService.findAll(); 
-    } 
-    @Get(":id")
-    findOne(@Param('id', ParseIntPipe) id: number){
-        return this.usersService.findOne(id);
-    } 
-
-    @Patch()
-    update(@Param('id') id: String, @Body() userUpdate: UpdateUserDto){
-        return { id, ...userUpdate}
+    }  
+    
+    @Patch(':id')
+    update(@Param('id', ParseIntPipe) id: number, @Body() userUpdate: UpdateUserDto){
+        return this.usersService.updateOneByTgId(id, userUpdate);
     }   
+
 }

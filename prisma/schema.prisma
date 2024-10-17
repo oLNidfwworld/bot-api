@@ -15,7 +15,7 @@ datasource db {
 
 model User {
   id    Int     @default(autoincrement()) @id
-  uid Int @default(0)
+  uid Int @unique 
   name String @default("") 
   avatar_file_id String @default("")
   description String @default("")

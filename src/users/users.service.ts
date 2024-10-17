@@ -1,8 +1,8 @@
 import { NotFoundException } from '@nestjs/common';
-import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Injectable } from '@nestjs/common'; 
 import { DatabaseService } from 'src/database/database.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -64,6 +64,18 @@ export class UsersService {
     return santizied;
   }
 
+  async updateOneByTgId(tgid: number, userUpdate: UpdateUserDto) {
+    const user = this.databaseService.user.update({
+      where: {
+        uid : tgid
+      },
+      data : {
+        ...userUpdate
+      }
+    });
+    return user;
+  }
+
   async create(createUserDto: CreateUserDto) {
     const user = await this.databaseService.user.create({
       data: createUserDto,
@@ -85,7 +97,5 @@ export class UsersService {
     delete santizied['selectedGameOnPlatform'];
 
     return santizied;
-  }
-
-  // other functions just a algoritmic implementation
+  } 
 }
