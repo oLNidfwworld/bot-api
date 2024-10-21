@@ -4,10 +4,14 @@ import { DatabaseService } from 'src/database/database.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Prisma } from '@prisma/client';
+import { LikedListService } from 'src/liked-list/liked-list.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly likedListService: LikedListService,
+  ) {}
 
   private includeUserFields = {
     selectedGameOnPlatform: {
@@ -76,16 +80,22 @@ export class UsersService {
   }
 
   async getUserBySimilarPlatformGame(tgid: number) {
-    const user = await this.findOne(tgid);
-    const similarUser = this.databaseService.user.findFirst({
+    const userLikedList = await this.likedListService.getLikedListIds(tgid);
+    const user = await this.findOneByTgId(tgid);
+    const similarUser = await this.databaseService.user.findFirst({
       where: {
         selectedGameId: user.selectedGameId,
         selectedPlatformId: user.selectedPlatformId,
+        NOT : {
+          id : {
+            in : [ ...userLikedList, user.id ], // TODO : not records ids, but uid
+          }
+        }
       },
       include: this.includeUserFields,
-    });
-    if (!similarUser) throw new NotFoundException('User not found');
- 
+    }); 
+    if (!similarUser) throw new NotFoundException('next user not found');
+
     const santizied = this.sanitizeOutput(similarUser);
 
     return santizied;
@@ -114,7 +124,7 @@ export class UsersService {
     return santizied;
   }
 
-  protected sanitizeOutput(user) {
+  private sanitizeOutput(user) {
     const santizied = {
       ...user,
       game: user.selectedGameOnPlatform.game,

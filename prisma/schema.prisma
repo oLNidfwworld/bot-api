@@ -25,10 +25,12 @@ model User {
   selectedPlatformId  Int? 
   selectedGameOnPlatform GamesOnPlatforms? @relation(fields: [selectedGameId, selectedPlatformId], references: [gameId, platformId])
  
-  likedList LikedList[]
+  likedList LikedList[] 
+  receivedLikes LikedList[] @relation("TargetUser")
   
   // genderId Int? 
  
+
 } 
 
 // model Gender {
@@ -40,12 +42,14 @@ model User {
 
 model LikedList {
   id Int @id @default(autoincrement())
+
+  userId Int 
+  user User @relation(fields: [userId], references: [id])
+ 
   isLiked Boolean 
-
-  userId Int
-  use User @relation(fields: [userId], references: [id])
-
-  userLiked Int @unique
+  
+  userLiked Int
+  targetUser User @relation("TargetUser", fields: [userLiked], references: [id])
 }
  
 

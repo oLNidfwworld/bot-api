@@ -20,15 +20,22 @@ export class UsersController {
         return this.usersService.create(user); 
     } 
     
-    @Get(":id")
-    findOne(@Param('id', ParseIntPipe) id: number){
-        return this.usersService.findOneByTgId(id); 
-    }   
+    
 
     @Get()
     findAll( ){
         return this.usersService.findAll(); 
     }  
+    
+    @Get("list-next/:id")
+    getUserBySimilarPlatformGame( @Param('id', ParseIntPipe) id: number ) {
+        return this.usersService.getUserBySimilarPlatformGame(id);
+    }
+    
+    @Get(":id")
+    findOne(@Param('id', ParseIntPipe) id: number){
+        return this.usersService.findOneByTgId(id); 
+    }
     
     @Patch(':id')
     update(@Param('id', ParseIntPipe) id: number, @Body() userUpdate: UpdateUserDto){
